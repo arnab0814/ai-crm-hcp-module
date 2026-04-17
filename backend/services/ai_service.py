@@ -42,5 +42,3 @@ from groq import Groq
 from dotenv import load_dotenv
 
 load_dotenv()
-
-client = Groq(api_key=os.getenv("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"))
