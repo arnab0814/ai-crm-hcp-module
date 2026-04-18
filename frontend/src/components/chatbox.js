@@ -6,32 +6,58 @@ function ChatBox() {
   const [messages, setMessages] = useState([]);
 
   const sendMessage = async () => {
+  try {
     const res = await axios.post("http://127.0.0.1:8000/interactions/agent", {
       text: input
     });
 
     const data = res.data;
 
+    console.log("API Response:", data);
+
+    // 🔥 Autofill FIRST (before UI update)
+    if (data.action === "log" && data.data) {
+      console.log("Autofill event sent", data.data);
+
+      window.dispatchEvent(
+        new CustomEvent("autofillForm", {
+          detail: data.data
+        })
+      );
+    }
+
     let displayText = "";
 
     if (data.action === "log") {
       displayText = "✅ Interaction logged successfully";
-    } else if (data.action === "get") {
+    } 
+    else if (data.action === "get") {
       displayText = data.result.map(
         (item) =>
           `${item.doctor_name} - ${item.product} - Follow up: ${item.follow_up}`
       ).join("\n");
-    } else if (data.action === "edit") {
+    } 
+    else if (data.action === "edit") {
       displayText = "✏️ Interaction updated successfully";
     }
+    else if (data.action === "summarize") {
+      displayText = "🧠 " + data.result;
+    }
+    else if (data.action === "suggest") {
+      displayText = "💡 " + data.result;
+    }
 
-    setMessages([
-      ...messages,
+    setMessages((prev) => [
+      ...prev,
       { user: input, bot: displayText }
     ]);
 
     setInput("");
-  };
+
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
 
   return (
     <div>

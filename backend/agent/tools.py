@@ -18,3 +18,19 @@ def summarize_tool(data):
 
 def suggest_next_action_tool(data):
     return "Follow up with doctor in 3 days"
+
+def summarize_interaction_tool(data):
+    """
+    Creates a short summary of the interaction
+    """
+    doctor = data.get("doctor_name", "Doctor")
+    product = data.get("product", "product")
+
+    return f"Summary: Interaction with {doctor} regarding {product}."
+
+
+def suggest_next_action_tool(data):
+    """
+    Suggests next action based on interaction
+    """
+    return "Suggested Action: Schedule a follow-up visit or send product information."

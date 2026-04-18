@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 function Form() {
+
+  // ✅ Correct state
   const [form, setForm] = useState({
     doctor_name: "",
     notes: "",
@@ -10,6 +12,28 @@ function Form() {
     follow_up: ""
   });
 
+  // ✅ Autofill listener
+  useEffect(() => {
+    const handler = (event) => {
+      const data = event.detail;
+
+      setForm({
+        doctor_name: data.doctor_name || "",
+        notes: data.notes || "",
+        product: data.product || "",
+        date: data.date || "",
+        follow_up: data.follow_up || ""
+      });
+    };
+
+    window.addEventListener("autofillForm", handler);
+
+    return () => {
+      window.removeEventListener("autofillForm", handler);
+    };
+  }, []);
+
+  // ✅ Submit
   const handleSubmit = async () => {
     await axios.post("http://127.0.0.1:8000/interactions/", form);
     alert("✅ Interaction Saved");
@@ -25,6 +49,7 @@ function Form() {
             key={key}
             placeholder={key}
             style={styles.input}
+            value={form[key]}  // 🔥 IMPORTANT (missing in your code)
             onChange={(e) =>
               setForm({ ...form, [key]: e.target.value })
             }
